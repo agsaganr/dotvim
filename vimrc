@@ -1,6 +1,7 @@
 " Vim configuration
 "
 " Author: Karl Yngve Lervåg
+"
 
 call vimrc#init()
 
@@ -140,6 +141,7 @@ if !isdirectory(&undodir)
 endif
 
 " Behaviour
+set autochdir
 set lazyredraw
 set confirm
 set hidden
@@ -224,6 +226,7 @@ endif
 " {{{1 Appearance and UI
 
 set background=light
+set termguicolors
 
 if &t_Co == 8 && $TERM !~# '^linux'
   set t_Co=256

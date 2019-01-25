@@ -17,6 +17,9 @@ mv ~/.vimrc ~/.vimrc_old
 # Clone dotvim-simple
 git clone https://github.com/lervag/dotvim-simple ~/.vim
 
+# Install python-neovim, e.g.
+sudo pip install --user neovim
+
 # Start Vim, let it install plugins and quit
 vim
 
