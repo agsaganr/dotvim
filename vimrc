@@ -16,6 +16,7 @@ Plug 'Konfekt/FastFold'         " Make folding work faster
 Plug 'luochen1990/rainbow'      " Rainbow parantheses (looks good)
 Plug 'andymass/vim-matchup'     " Highlight matching stuff
 Plug 'junegunn/vim-slash'       " For improved search highlighting
+Plug 'RRethy/vim-illuminate'    " Highlighting other uses of word under cursor
 
 " Plugin: Completion and snippets
 if has('nvim') || v:version >= 800
@@ -38,7 +39,7 @@ endif
 Plug 'tpope/vim-repeat'         " Allow . to repeat more actions
 
 " Plugin: Version control systems
-Plug 'gregsexton/gitv', { 'on' : 'Gitv' }
+Plug 'rbong/vim-flog'
 Plug 'tpope/vim-fugitive'
 
 " Filetype: python
@@ -48,6 +49,9 @@ Plug 'tmhedberg/SimpylFold'     " Python fold plugin
 
 " Filetype: LaTeX
 Plug 'lervag/vimtex'            " LaTeX plugin
+
+" Filetype: OpenFOAM
+Plug 'lervag/vim-foam'          " OpenFOAM plugin
 
 call plug#end()
 
@@ -101,7 +105,7 @@ endif
 " Basic
 set cpoptions+=J
 set tags=tags;~,.tags;~
-set path=.,**
+set path=.,,
 if &modifiable
   set fileformat=unix
 endif
@@ -173,7 +177,7 @@ set fillchars=vert:│,fold:\ ,diff:⣿
 set matchtime=2
 set matchpairs+=<:>
 set cursorline
-set scrolloff=10
+set scrolloff=5
 set splitbelow
 set splitright
 set previewheight=20
@@ -298,12 +302,18 @@ let g:loaded_zipPlugin = 1
 
 " {{{2 feature: git
 
-let g:Gitv_WipeAllOnClose = 1
-let g:Gitv_DoNotMapCtrlKey = 1
+let g:flog_default_arguments = {}
+let g:flog_default_arguments.format = "[%h] %s\n          %ad%d"
+let g:flog_default_arguments.date = 'format:%Y-%m-%d %H:%M:%S'
 
-nnoremap <silent><leader>gl :Gitv --all<cr>
-nnoremap <silent><leader>gL :Gitv! --all<cr>
-xnoremap <silent><leader>gl :Gitv! --all<cr>
+nnoremap <silent><leader>gl :silent Flog -all<cr>
+nnoremap <silent><leader>gL :silent Flog -all -path=%<cr>
+
+augroup vimrc_flog
+  autocmd!
+  autocmd FileType floggraph setlocal nolist
+  autocmd FileType floggraph nmap <buffer><silent> q <plug>FlogQuit
+augroup END
 
 nnoremap <silent><leader>gs :call personal#git#fugitive_toggle()<cr>
 nnoremap <silent><leader>gd :Gdiff<cr>
@@ -388,7 +398,10 @@ let g:ctrlp_switch_buffer = 'e'
 let g:ctrlp_working_path_mode = 'rc'
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files']
 
-if executable('rg')
+if executable('fd')
+  let g:ctrlp_user_command += ['fd --type f --color=never "" %s']
+  let g:ctrlp_use_caching = 0
+elseif executable('rg')
   let g:ctrlp_user_command += ['rg %s --files --color=never --glob ""']
   let g:ctrlp_use_caching = 0
 elseif executable('ag')
@@ -449,6 +462,11 @@ let g:rainbow_conf = {
       \}
 
 " }}}2
+" {{{2 plugin: vim-illuminate
+
+let g:Illuminate_delay = 0
+
+" }}}2
 " {{{2 plugin: vim-matchup
 
 let g:matchup_matchparen_status_offscreen = 0
@@ -498,10 +516,15 @@ let g:tex_conceal = ''
 let g:tex_flavor = 'latex'
 let g:tex_isk='48-57,a-z,A-Z,192-255,:'
 
+let g:vimtex_fold_enabled = 1
 let g:vimtex_quickfix_open_on_warning = 0
 let g:vimtex_index_split_pos = 'below'
 let g:vimtex_toc_hotkeys = {'enabled' : 1}
 let g:vimtex_view_general_viewer = 'evince'
+
+if has('nvim')
+  let g:vimtex_compiler_progname = 'nvr'
+endif
 
 " }}}2
 
